@@ -2,8 +2,9 @@ import os
 from typing import List
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.vectorstores import Chroma
+# from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.vectorstores import Chroma
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -57,21 +58,29 @@ class PDFProcessor:
         """Search the vector store for similar content."""
         if not self.vector_store:
             raise ValueError("Vector store not initialized. Please process PDFs first.")
-        
+
         docs = self.vector_store.similarity_search(query, k=k)
         return [doc.page_content for doc in docs]
 
 def main():
     # Example usage
     pdf_dir = "pdfs"  # Directory containing PDF files
+    print(f"Looking for PDFs in directory: {pdf_dir}")
+
     processor = PDFProcessor(pdf_directory=pdf_dir)
-    
+    print("PDFProcessor initialized")
+
     # Process PDFs and create vector store
+    print("Starting to process PDFs...")
     texts = processor.process_pdfs()
+    print(f"Processed {len(texts)} text chunks")
+
+    print("Creating vector store...")
     processor.create_vector_store(texts)
-    
+
     # Example search
     query = "What is the main topic of the documents?"
+    print(f"Searching for: {query}")
     results = processor.search(query)
     print("\nSearch results:")
     for i, result in enumerate(results, 1):
@@ -79,4 +88,4 @@ def main():
         print(result)
 
 if __name__ == "__main__":
-    main() 
+    main()

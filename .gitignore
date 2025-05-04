@@ -174,3 +174,9 @@ poetry.toml
 pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python
+
+# remove chromadb files
+chroma_db/
+
+#remove files in pdfs directory
+pdfs/*

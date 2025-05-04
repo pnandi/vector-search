@@ -15,7 +15,17 @@ search() {
     read -p "Enter your search query: " query
     python -c "
 from pdf_to_embeddings import PDFProcessor
+from langchain_huggingface import HuggingFaceEmbeddings
+from langchain_community.vectorstores import Chroma
+
+# Initialize the processor with the same embeddings model
 processor = PDFProcessor(pdf_directory='pdfs', persist_directory='chroma_db')
+
+# Load the existing vector store
+embeddings = HuggingFaceEmbeddings(model_name='sentence-transformers/all-MiniLM-L6-v2')
+processor.vector_store = Chroma(persist_directory='chroma_db', embedding_function=embeddings)
+
+# Perform the search
 results = processor.search('$query')
 print('\nSearch results:')
 for i, result in enumerate(results, 1):
@@ -47,4 +57,4 @@ while true; do
             echo "Invalid option. Please try again."
             ;;
     esac
-done 
+done
